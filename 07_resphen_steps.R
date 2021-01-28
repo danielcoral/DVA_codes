@@ -58,13 +58,14 @@ kopt_phen <- err_df %>%
     theme(axis.title = element_text(size = 16),
           axis.text = element_text(size = 12))
 
-ggsave("../plots/kopt.png", kopt_phen)
+ggsave("../plots/kopt_phen.png", kopt_phen)
 
 ## VSURF plots
 library(patchwork)
 
 vsurf_thres1 <- clades %>%
-    mutate(measure = "VI mean",
+    arrange(match(Cluster, res_phen$vsurf_ptree$imp.mean.dec.ind)) %>%
+    mutate(Cluster = factor(Cluster, levels = Cluster), measure = "VI mean",
            Value = res_phen$vsurf_ptree$imp.mean.dec) %>%
     ggplot(aes(Cluster, Value, group = 1)) +
     geom_line() + geom_point(aes(colour = clade_col)) +
@@ -76,10 +77,16 @@ vsurf_thres1 <- clades %>%
     labs(y = "Error rate increase") +
     facet_wrap(~ measure)
 
-vsurf_thres2 <- rbind(mutate(clades, measure = "VI SD",
-                             Value = res_phen$vsurf_ptree$imp.sd.dec),
-                      mutate(clades, measure = "Decision tree",
-                             Value = res_phen$vsurf_ptree$pred.pruned.tree)) %>%
+vsurf_thres2 <- clades %>%
+    arrange(match(Cluster, res_phen$vsurf_ptree$imp.mean.dec.ind)) %>%
+    mutate(Cluster = factor(Cluster, levels = Cluster)) %>%
+    {
+        df <- .
+        vi_sd <- mutate(df, measure = "VI SD",
+                        Value = res_phen$vsurf_ptree$imp.sd.dec)
+        pred_vi_sd <- mutate(df, measure = "Decision tree",
+                             Value = res_phen$vsurf_ptree$pred.pruned.tree)
+        rbind(vi_sd, pred_vi_sd) } %>%
     mutate(measure = factor(measure, levels = unique(measure))) %>%
     ggplot(aes(Cluster, Value, group = 1)) +
     geom_line() + geom_point(aes(colour = clade_col)) +
@@ -91,7 +98,8 @@ vsurf_thres2 <- rbind(mutate(clades, measure = "VI SD",
 
 vsurf_interp <- clades %>%
     filter(Cluster %in% res_phen$vsurf_ptree$varselect.thres) %>%
-    mutate(measure = "Nested models",
+    arrange(match(Cluster, res_phen$vsurf_ptree$varselect.thres)) %>%
+    mutate(Cluster = factor(Cluster, levels = Cluster), measure = "Nested models",
            OOB_error = res_phen$vsurf_ptree$err.interp) %>%
     ggplot(aes(Cluster, OOB_error, group = 1)) +
     geom_line() + geom_point(aes(colour = clade_col)) +
@@ -119,8 +127,10 @@ vsurf_interp <- clades %>%
 
 vsurf_pred <- clades %>%
     filter(Cluster %in% res_phen$vsel) %>%
-    mutate(measure = "Final model", OOB_error = res_phen$vsurf_ptree$err.pred) %>%
-    mutate(diff = round(OOB_error - lag(OOB_error), 3)) %>%
+    arrange(match(Cluster, res_phen$vsel)) %>%
+    mutate(Cluster = factor(Cluster, levels = Cluster),
+           measure = "Final model", OOB_error = res_phen$vsurf_ptree$err.pred,
+           diff = round(OOB_error - lag(OOB_error), 3)) %>%
     ggplot(aes(Cluster, OOB_error, group = 1)) +
     geom_line() + geom_point(aes(colour = clade_col)) +
     scale_colour_identity(guide = "none") +
@@ -137,4 +147,4 @@ vsurf <- wrap_plots(vsurf_thres1, vsurf_thres2,
     plot_annotation(tag_levels = "A") &
     theme(plot.tag = element_text(face = 'bold'))
 
-ggsave("../plots/vsurf.png", vsurf)
+ggsave("../plots/vsurf_phen.png", vsurf)
