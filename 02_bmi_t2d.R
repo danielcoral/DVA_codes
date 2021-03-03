@@ -144,4 +144,4 @@ head(nearest_genes)
 
 mix <- left_join(mix, nearest_genes, by = "rsid")
 
-vroom::vroom_write(mix, "../files/mix.txt")
+rio::export(mix, "../files/mix.tsv")

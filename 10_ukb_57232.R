@@ -38,7 +38,7 @@ system(paste("/ludc/Tools/Software/ukbb/ukbunpack",
 ## Selected through the Data Showcase
 column_ids <- c(
     ## For QC of samples - genetic sex, PCs, ethnic grouping, kinship...
-    22001, 22006, 22021, 22020, 22027, 22019, 20115, 22009, 21000
+    22001, 22006, 22020, 22027, 22019, 22009,
     ## Age at recruitment, date of assessment, sex, BMI, blood pressure 
     21022, 53, 31, 21001, 4080, 93, 4079, 94,
     ## Vascular or heart problems, non-cancer illnesses, ICD-codes, medications
@@ -77,7 +77,7 @@ system(paste("mv", list.files(pattern = "\\.sample$"), p_dir))
 
 ## FAM file
 system(paste("/ludc/Tools/Software/ukbb/ukbgene",
-             "cal", "-c5", "-m",
+             "cal", "-c1", "-m",
              paste0("-a", paste(p_dir, ukb_key, sep = "/"))))
 
 system(paste("mv", list.files(pattern = "\\.fam$"), p_dir))

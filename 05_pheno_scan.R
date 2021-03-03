@@ -5,11 +5,9 @@ library(tidyverse)
 library(data.table)
 
 ### BMI-T2D intersection
-mix <- vroom::vroom("../files/mix.txt")
-
+mix <- rio::import("../files/mix.tsv")
 
 #### Phenoscanner query ####
-
 phenome_scan <- phenoscanner::phenoscanner(snpquery = mix$rsid, pvalue = 1,
                                            proxies = "EUR", r2 = 0.5)
 
@@ -18,10 +16,14 @@ phen_res <- phenome_scan$results
 
 fwrite(phen_res, "../files/phen_res.txt")
 
+phen_res <- rio::import("../files/phen_res.txt")
+
 ## Phenoscanner SNP information - including proxies
 phen_snps <- phenome_scan$snps
 
 fwrite(phen_snps, "../files/phen_snps.txt")
+
+phen_snps <- rio::import("../files/phen_snps.txt")
 
 rm(phenome_scan)
 
@@ -49,34 +51,26 @@ fwrite(qc_snps, file = "../files/qc_snps.txt")
 
 premat_phen <- phen_res %>%
     ## 1. Setting column classes and harmonizing trait names
-    mutate_at(
-        vars(beta, se, p, n, n_cases, n_controls, proxy, r2),
-        as.numeric
-    ) %>%
-    mutate(
-        n_min = pmin(n_cases, n_controls),
-        trait = tolower(trait)
-    ) %>%
+    mutate(across(c(beta, se, p, n, n_cases, n_controls, proxy, r2),
+                  as.numeric),
+           n_min = pmin(n_cases, n_controls),
+           trait = tolower(trait)) %>%
     ## 2. Filtering for European ancestry
     filter(ancestry=="European") %>%
     ## 3. Adding SNP information
     inner_join(qc_snps, by = "rsid") %>%
     ## 4. Retaining studies with n > 500 or with at 25 minor alleles
-    filter((n_min == 0 & n > 500) | (n_min != 0 & n_min * maf > 25)) %>%
+    filter((n_min == 0 & n > 500) | (n_min > 0 & n_min * maf > 25)) %>%
     ## 5. Harmonizing p values and direction
-    mutate(
-        p = ifelse(p < 1e-300, 1e-300, p),
-        direction = case_when(
-            direction == "+" ~ 1,
-            direction == "-" ~ - 1,
-            direction == "0" ~ 0,
-            T ~ 2
-        )
-    ) %>%
+    mutate(p = ifelse(p < 1e-300, 1e-300, p),
+           direction = case_when(direction == "+" ~ 1,
+                                 direction == "-" ~ - 1,
+                                 direction == "0" ~ 0,
+                                 T ~ 2)) %>%
     ## 6. Removing columns without direction
-    filter(!direction == 2) %>%
+    filter(direction != 2) %>%
     ## 7. Selecting SNP-trait pairs
-    arrange(snp, trait, proxy, desc(r2), desc(n)) %>%
+    arrange(snp, trait, proxy, desc(r2), p) %>%
     distinct(snp, trait, .keep_all = T) %>%
     ## 8. Only including complete traits with at least 1 FDR 5% hit
     group_by(trait) %>%
@@ -85,22 +79,22 @@ premat_phen <- phen_res %>%
     filter(sum(p_adj < 0.05) >= 1) %>%
     ungroup() %>%
     ## 9. Calculating z-score
-    mutate(zscore = direction * abs(qnorm(p / 2))) %>%
+    mutate(zscore = direction * abs(qnorm(p / 2)),           
+           se = 1 / sqrt(2 * maf * (1 - maf) * (n + (zscore^2))),
+           beta = zscore * se) %>%
     ## 10. Aligning to the BMI increasing allele
-    inner_join(
-        mix %>%
-        select(rsid, ea, nea),
-        by = c("snp" = "rsid")
-    ) %>%
-    mutate(
-        harmon = case_when(
-            ref_a1 == ea & ref_a2 == nea ~ 1,
-            ref_a1 == nea & ref_a2 == ea ~ 2,
-            T ~ 0
-        ),
-        aligned.z = ifelse(harmon == 1, zscore, -zscore)
-    ) %>%
-    filter(!harmon == 0) %>%
+    inner_join(mix, by = c("snp" = "rsid")) %>%
+    mutate(harmon = case_when(ref_a1 == ea & ref_a2 == nea ~ 1,
+                              ref_a1 == nea & ref_a2 == ea ~ -1,
+                              T ~ 0),
+           zscore = zscore * harmon,
+           beta = beta * harmon,
+           a11 = ifelse(harmon == 1, a1, a2),
+           a22 = ifelse(harmon == 1, a2, a1),
+           a1 = a11, a2 = a22)%>%
+    filter(harmon != 0) %>%
+    mutate(hg38_pos = gsub("chr[0-9]+:", "", ref_hg38_coordinates)) %>%
+    select(-c(starts_with("ref_"), dprime, direction, harmon, a11, a22)) %>%
     ## Setting a code for each trait
     group_by(trait) %>%
     mutate(id = paste0("v", cur_group_id())) %>%
@@ -123,6 +117,7 @@ traits_to_exclude <- c(
     "self-reported type 2 diabetes",
     "started insulin within one year diagnosis of diabetes",
     "treatment with gliclazide",
+    "treatment with glimepiride",
     "treatment with insulin",
     "treatment with insulin product",
     "treatment with metformin",
@@ -156,10 +151,8 @@ fwrite(id_phen, "../files/id_phen.txt")
 
 #### Matrix construction ####
 mat_phen <- premat_phen %>%
-    select(snp, id, aligned.z) %>%
-    pivot_wider(names_from = id, values_from = aligned.z) %>%
-    mutate(disc = mix$disc[match(snp, mix$rsid)]) %>%
-    select(snp, disc, everything()) %>%
+    select(snp, disc, id, zscore) %>% 
+    pivot_wider(names_from = id, values_from = zscore) %>%
     arrange(desc(disc))
 
 fwrite(mat_phen, file = "../files/mat_phen.txt")
@@ -173,7 +166,7 @@ fwrite(mat_phen, file = "../files/mat_phen.txt")
 
 es_dis <- premat_phen %>%
     transmute(
-        `Z-score` = aligned.z,
+        `Z-score` = zscore,
         type = ifelse(n_cases == 0, "Continuous", "Binary")
     ) %>%
     ggplot(aes(`Z-score`)) +
@@ -182,3 +175,4 @@ es_dis <- premat_phen %>%
     ylab("Density")
 
 ggsave("../plots/es_dis.png", es_dis)
+

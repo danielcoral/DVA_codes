@@ -4,7 +4,10 @@ library("tidyverse")
 
 premat_phen <- rio::import("../files/premat_phen.txt")   ### The effects 
 res_phen <- rio::import("../files/res_phen.RData") ### The results
-mix <- rio::import("../files/mix.txt")
+mix <- rio::import("../files/mix.tsv")
+
+## Clusters of best model
+bestmodel <- res_phen$vsel
 
 ## Extracting cluster membership 
 resvars_phen <- res_phen$ptree$cluster %>%
@@ -18,16 +21,12 @@ resvars_phen <- res_phen$ptree$cluster %>%
                              rownames_to_column("id"),
                              by = "id")) %>%
     ungroup %>%
-    ## Clusters included in final model
-    filter(cluster %in% res_phen$vsurf_ptree$varselect.pred) %>%
-    inner_join(transmute(premat_phen, id, trait, snp,
-                         se = 1 / sqrt(2 * maf * (1 - maf) * (n + aligned.z^2)),
-                         b = aligned.z * se, z = aligned.z),
-               by = "id") %>%
-    inner_join(select(mix, snp = rsid, disc), by = "snp") %>%
+    ## Clusters included in best model found
+    filter(cluster %in% bestmodel) %>%
+    inner_join(premat_phen, by = "id") %>%
     group_by(cluster, squared.loading, trait, disc) %>%
     group_modify(~{
-        res <- meta::metagen(TE = b, seTE = se, data = .x,
+        res <- meta::metagen(TE = beta, seTE = se, data = .x,
                              comb.fixed = F, comb.random = T,
                              method.tau = "PM", hakn = F,
                              prediction = F)
@@ -40,10 +39,9 @@ resvars_phen <- res_phen$ptree$cluster %>%
     group_by(trait) %>%
     mutate(bcomp = abs(b[1] - b[2]), bcomp_se = sqrt(se[1]^2 + se[2]^2),
            pcomp = pnorm(-abs(bcomp/bcomp_se))) %>%
-    group_by(cluster) %>%
-    mutate(p_adj = p.adjust(pcomp, "fdr")) %>%
     ungroup %>%
-    arrange(cluster, desc(squared.loading))
+    mutate(p_adj = p.adjust(pcomp, "fdr")) %>%
+    arrange(match(cluster, bestmodel), desc(squared.loading))
 
 rio::export(resvars_phen, "../files/resvars_phen.tsv")
 

@@ -3,7 +3,7 @@
 library(tidyverse)
 library(hudson)
 
-mix <- rio::import("../files/mix.txt")
+mix <- rio::import("../files/mix.tsv")
 
 bmi_t2d <- rio::import("../files/bmi_t2d.txt") %>%
     mutate(across(c(p.bmi, p.t2d), function(x) ifelse(x < 1e-300, 1e-300, x))) %>%

@@ -40,37 +40,52 @@ rocplot <- ggroc(rocres) +
     coord_equal() +
     geom_abline(slope=1, intercept = 1, linetype = "dashed") +
     labs(x = "Specificity", y = "Sensitivity") +
-    theme_minimal()
+    theme_minimal() +
+    annotate("text", x = 0.25, y = 0.25,
+             label = paste0("AUC=", round(rocres$auc, 2)))
 
-rocres
+ggsave("../plots/rocres.png")
 
 ## Traits in the clusters
 resvars_phen <- rio::import("../files/resvars_phen.tsv")
 
-sigdiff <- resvars_phen %>%
+## Manual selection
+nms <- resvars_phen %>%
     filter(squared.loading > 0.1, p_adj < 0.05) %>%
-    ## Manual selection
-    slice(3, 4, 11, 12, 13, 14, 17, 18, 27, 28, 33, 34,
-          37, 38, 39, 40, 41, 42, 43, 44, 45, 46, ## First cluster
-          47, 48, 51, 52, 53, 54, 57, 58, 59, 60, ## Second cluster
-          61, 62, 63, 64, 67, 68, 69, 70,
-          93, 94, 141, 142, 161, 162, 165, 166, ## Third cluster
-          171, 172, 173, 174, 181, 182, ## Fourth cluster
-          191, 192, 195, 196, 197, 198, 199, 200) %>%
-    select(cluster, squared.loading, trait, disc, b, ci_lo, ci_up, p_adj)
+    transmute(cluster, trait) %>%
+    group_by(cluster) %>%
+    group_map(~unique(.x$trait))
 
-## Shortening names
-sigdiff$short_names <- rep(c(
-    "Hypertension", "N meds taken", "N illnesses\n(non-cancer)", "Self-rated\nhealth",
-    "SBP", "Alcohol intake\nfrequency", "DBP", "Adiponectin", "Exertional\nchest pain",
-    "Insulin\ndisposition index", "Takes\nnitrate",
-    "Cholesterol\nlowering meds", "Takes\nsimvastatin", "Takes\nlipitor",
-    "Takes\naspirin", "HDL",
-    "Weight", "Arm fat mass", "Leg fat mass", "BMI", "Basal metabolic\nrate",
-    "Childhood\nobesity", "WHR\nmales", "Age at\nmenarche",
-    "WHR adj\nsmoking", "WHR adj physical\nactivity", "WHR", "WHR\nfemales", 
-    "Gout", "Daytime sleep", "Insulin sensitivity\nindex"),
-    each = 2)
+toselect <- c(nms[[1]][c(2,6,7,9,14,17,19,20,21,22,23)],
+              nms[[2]][-c(2,7)],
+              nms[[3]][c(1,2,4,5,16,39,48,49)],
+              nms[[4]][c(1,2,6,12,13,15,16,18)])
+
+toselect
+
+newnms <- tibble(
+    trait = toselect,
+    short_names = c(
+        ## First cluster
+        "Hypertension", "N meds taken", "N illnesses\n(non-cancer)", "Self-rated\nhealth",
+        "SBP", "Alcohol intake\nfrequency", "DBP", "Adiponectin", "Exertional\nchest pain",
+        "Insulin\ndisposition index", "Takes\nnitrate",
+        ## Second cluster
+        "Cholesterol\nlowering meds", "Takes\nsimvastatin",
+        "Takes\natorvastatin", "Takes\nlipitor",
+        "Takes\naspirin", "HDL",
+        ## Third cluster
+        "Weight", "Arm fat mass\n(R)", "Leg fat mass\n(L)", "BMI", "Basal metabolic\nrate",
+        "Childhood\nobesity", "Mononeuropathy\nupper limb", "Age at\nmenarche",
+        ## Fourth cluster
+        "WHR adj\nsmoking", "WHR adj physical\nactivity", "WHR", "WHR\nfemales",
+        "Reticulocyte\ncount", "Gout", "Daytime sleep", "Insulin sensitivity\nindex"
+    )
+)
+
+
+sigdiff <- resvars_phen %>%
+    inner_join(newnms)
 
 resphen_traits <- sigdiff %>%
     mutate(cluster = factor(recode(cluster,
@@ -113,7 +128,7 @@ resphen_traits <- sigdiff %>%
                                       labels = c("Concordant", "Discordant")) +
                   guides(colour = guide_legend(title = NULL)) +
                   geom_vline(xintercept = 0, linetype = "dashed") +
-                  xlab("Pooled \u03b2") +
+                  xlab("Average per-allele \u03b2") +
                   facet_wrap(reorder(short_names, desc(squared.loading)) ~ ., ncol = 1) +
                   theme(axis.text.y = element_blank(),
                         axis.ticks.y = element_blank(),
