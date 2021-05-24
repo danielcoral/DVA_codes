@@ -24,7 +24,7 @@
    * Leverage this information for further stratification with potential clinical meaning.
 * Analysis pipeline
 #+CAPTION: Analysis flowchart
-[[../plots/aline_plot.png]]
+[[/aline_plot.png]]
 * BMI and T2D GWAS
   * BMI: Yengo /et al./ (2018) vs T2D: Mahajan /et al/ (2018).
     * Common biallelic variants (MAF > 1%)
@@ -34,11 +34,11 @@
     * Clumpling (/r^2/ < 0.01 over 500kb window in 1000G EUR)
 * Cross-referencing
 #+ATTR_LATEX: :width 7cm
-[[../plots/gmirror.png]]
+[[/gmirror.png]]
 * Assembly of concordant and discordant profiles
 #+CAPTION: Lead variants aligned to the BMI increasing allele and stratified by their \(\beta\) coefficient for T2D.
 #+ATTR_LATEX: :width 6cm
-[[../plots/profiles.png]]
+[[/profiles.png]]
 * Phenome-wide scan - Data collection
   * MRC IEU GWAS database
   * Associations of lead SNPs or nearest proxy if missing 
@@ -72,7 +72,7 @@ Z & = \frac{D}{SE_D} \sim \mathcal{N}(0,\,{SE_D}^{2})
 * Results of univariate comparison
 #+CAPTION: Significant P values (FDR 10%) for difference between pooled estimates (D)
 #+ATTR_LATEX: :width 7cm
-[[../plots/phewas_res.png]]
+[[/phewas_res.png]]
 * Phenome-wide comparison - SNP-Trait matrix
   * For each SNP in each trait:
 \begin{align*}
@@ -122,46 +122,46 @@ Z = \frac{\beta}{SE_{\beta}}
 * RF models
 #+CAPTION: Error rate of RF models across every /k/
 #+ATTR_LATEX: :width 7cm
-[[../plots/kopt_phen.png]]
+[[/kopt_phen.png]]
 * Clusters
 #+CAPTION: Clustering tree with optimal partition
 #+ATTR_LATEX: :width 7cm
-[[../plots/dend_phen.png]]
+[[/dend_phen.png]]
 * Trait selection - First stage
 #+CAPTION: Importance score of clusters
 #+ATTR_LATEX: :width 7cm
-[[../plots/clusimp_phen.png]]
+[[/clusimp_phen.png]]
 * Trait selection - Final model
 #+CAPTION: Importance score, squared loading and pooled estimates of each subtype
 #+ATTR_LATEX: :width 7cm
-[[../plots/clus_str_phen.png]]
+[[/clus_str_phen.png]]
 * Main variables
 #+CAPTION: SNP effects for the main three variables
 #+ATTR_LATEX: :width 7cm
-[[../plots/mainvars_phen.png]]
+[[/mainvars_phen.png]]
 * Proximity matrix
 #+CAPTION: Multi-dimensional scaling of RF proximity matrix
 #+ATTR_LATEX: :width 7cm
-[[../plots/mds_phen.png]]
+[[/mds_phen.png]]
 * Individual SNP effects on traits selected
 #+CAPTION: Heatmap of main variables and RF assignment
 #+ATTR_LATEX: :width 7cm
-[[../plots/phen_hm.png]]
+[[/phen_hm.png]]
 * External validation - BioVU PheWAS
 #+CAPTION: Concordant and discordant effects in BioVU. Stars represent 5% FDR significance after exclusion of individuals with T1D
 #+ATTR_LATEX: :width 7cm
-[[../plots/biovu_pw.png]]
+[[/biovu_pw.png]]
 * External validation - BioVU LabWAS
 #+CAPTION: Concordant and discordant weight gain in BioVU
 #+ATTR_LATEX: :width 7cm
-[[../plots/lw_biovu.png]]
+[[/lw_biovu.png]]
 * Mortality in UK Biobank - Concordant vs Discordant SNPs
 #+CAPTION: Survival analysis of concordant and discordant PRS
 #+ATTR_LATEX: :width 7cm
-[[../plots/prs_surv.png]]
+[[/prs_surv.png]]
 * Mendelian Randomization
 #+ATTR_LATEX: :width 7cm
-[[../plots/mr_res.png]]
+[[/mr_res.png]]
 * Conclusions
   * Concordant and discordant SNPs differ mainly in:
     * Liver enzymes - Central adiposity
