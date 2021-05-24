@@ -24,7 +24,7 @@
    * Leverage this information for further stratification with potential clinical meaning.
 * Analysis pipeline
 #+CAPTION: Analysis flowchart
-[[file:plots/aline_plot.png]]
+[[./plots/aline_plot.png]]
 * BMI and T2D GWAS
   * BMI: Yengo /et al./ (2018) vs T2D: Mahajan /et al/ (2018).
     * Common biallelic variants (MAF > 1%)
