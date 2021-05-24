@@ -1,0 +1,34 @@
+## Analysis pipeline plot
+
+library(tidyverse)
+library(ggrepel)
+
+aline_dat <- data.frame(
+    items = c(NA,
+              "Cross-reference\nBMI and T2D\nGWAS",
+              "Concordant\nand\ndiscordant\nobesity subtypes",
+              "Phenome-wide\nscan",
+              "Phenome-wide\ncomparison",
+              "Feature\nselecction",
+              "External\nvalidation\nin BioVU",
+              "Subtype-specific\nmortality in UKB",
+              "Mendelian\nrandomization"),
+    x = seq(0, 8, 1), y = 0,
+    ylabels = c(0, 5,
+                ceiling(runif(7, 2, 7)) * c(-1, rep(c(1,-1), 3)))
+)
+
+aline_plot <- aline_dat %>% 
+    ggplot(aes(x, y)) +
+    geom_segment(aes(x = 0, y = 0, xend = max(x) + 1, yend = 0),
+                 arrow = arrow(length = unit(0.5, "cm"))) +
+    geom_segment(aes(x = x, y = 0, xend = x, yend = ylabels)) +
+    geom_point(aes(fill = items), size = 5,
+               shape = 21, color = "black") +
+    geom_label(aes(y = ylabels, label = items)) +
+    guides(fill = "none") +
+    theme_void()
+
+save(aline_plot, file = "../plot_files/aline_plot.RData")
+
+ggsave("../plots/aline_plot.png", aline_plot, height = 5)
