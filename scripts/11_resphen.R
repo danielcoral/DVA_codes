@@ -55,7 +55,7 @@ kopt_phen <- with(res_phen, cbind(kval, oob)) %>%
                   axis.text = element_text(size = 12))
     }
 
-ggsave("../plots/kopt_phen.png", kopt_phen)
+ggsave("../docs/plots/kopt_phen.png", kopt_phen)
 
 ##------------------------------
 ## Hierarchical clustering tree
@@ -85,7 +85,7 @@ gdend <- groupClade(dend, clades$clade_num) + aes(color = group) +
                                             keywidth = c(0, rep(1,res_phen$kopt)))) +
     theme(legend.position = "top")
 
-ggsave("../plots/dend_phen.png", gdend)
+ggsave("../docs/plots/dend_phen.png", gdend)
 
 ##---------------------------------
 ## Cluster importance (color coded)
@@ -119,7 +119,7 @@ clusimp_phen_plot <- clusimp_phen %>%
     theme(axis.title.x = element_text(size = 6),
           plot.title = element_text(size = 8, face = "bold"))
 
-ggsave("../plots/clusimp_phen.png", clusimp_phen_plot)
+ggsave("../docs/plots/clusimp_phen.png", clusimp_phen_plot)
 
 ##--------------------
 ## Cluster membership 
@@ -292,7 +292,7 @@ clus_str_phen <- wrap_plots(sl_plot, re_meta_plot, imp_plot,
     theme(axis.title.x = element_text(size = 8),
           axis.text.x = element_text(size = 6))
 
-ggsave("../plots/clus_str_phen.png")
+ggsave("../docs/plots/clus_str_phen.png")
 
 ##----------------
 ## Main variables
@@ -320,7 +320,7 @@ mainvars_plot <- resvars_phen %>%
         geom_vline(xintercept = 0, linetype = "dashed") +
         labs(x = "SBP", y = "HDL cholesterol", size = "SHBG", fill = NULL)
 
-ggsave("../plots/mainvars_phen.png", mainvars_plot)
+ggsave("../docs/plots/mainvars_phen.png", mainvars_plot)
 
 ##--------------------
 ## Random Forest model
@@ -358,7 +358,7 @@ rocplot <- ggroc(rocres) +
     annotate("text", x = 0.25, y = 0.25,
              label = paste0("AUC=", round(rocres$auc, 2)))
 
-ggsave("../plots/rocres.png")
+ggsave("../docs/plots/rocres.png")
 
 ## Selecting best threshold with ROC curve
 best_thres <- coords(rocres, "best", transpose = TRUE)
@@ -521,7 +521,7 @@ heatmap <- sigdiff %>%
     theme(plot.margin = unit(c(0,0,0,0), "cm"),
           panel.border = element_rect(colour = "black", fill = NA))
 
-ggsave("../plots/phen_hm.png", heatmap)
+ggsave("../docs/plots/phen_hm.png", heatmap)
 
 ## First two dimensions of proximity matrix
 cmdscale(1 - all_prox, eig = TRUE) %>%

@@ -22,4 +22,4 @@ prof <- mix %>%
 
 save(prof, file = "../plot_files/profiles.RData")
 
-ggsave("../plots/profiles.png", prof)
+ggsave("../docs/plots/profiles.png", prof)

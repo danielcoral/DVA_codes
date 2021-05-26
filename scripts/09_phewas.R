@@ -221,4 +221,4 @@ phewas_res <- dxtab_c %>%
 
 save(phewas_res, file = "../plot_files/phewas_res.RData")
 
-ggsave("../plots/phewas_res.png", phewas_res)
+ggsave("../docs/plots/phewas_res.png", phewas_res)

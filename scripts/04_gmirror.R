@@ -87,4 +87,4 @@ gmirror <- list(g, s, grid::textGrob("-log10 p"), patchwork::plot_spacer()) %>%
 
 save(gmirror, file = "../plot_files/gmirror.RData") 
 
-ggsave("../plots/gmirror.png", gmirror)
+ggsave("../docs/plots/gmirror.png", gmirror)
