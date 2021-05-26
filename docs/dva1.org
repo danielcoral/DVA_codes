@@ -1,0 +1,187 @@
+#+TITLE: Discordant variant analysis
+#+AUTHOR: Daniel Coral
+#+EMAIL: daniel.coral@med.lu.se
+#+SETUPFILE: org/theme-readtheorg.setup
+#+OPTIONS: email:t
+#+BEAMER_HEADER: \institute{GAME unit}
+#+BEAMER_THEME: Madrid
+#+HTML_HEAD: <style> #content{max-width:1800px;}</style>
+
+* Background
+  * The relationship between obesity and cardiometabolic risk is highly heterogeneous.
+  * Individuals in the same BMI level may display different cardiometabolic risk:
+    * ~ 30% of people with a BMI > 30 kg/m^2 display a protective metabolic profile.
+    * ~ 30% of people with BMI < 25 kg/m^2 develop conditions usually associated with obesity.
+  * Better risk stratification and more precise interventions may improve outcomes.
+  * Obesity and T2D are closely linked.
+  * T2D is in turn, linked to many cardiovascular diseases, and is life-threatening.
+  * Factors uncoupling obesity from T2D risk may be used to define clinically relevant subgroups of obesity.
+* Aims
+   * Use genetics to stratify obesity into 2 subtypes:
+     * Concordant (\uparrow BMI and \uparrow T2D)
+     * Discordant (\uparrow BMI and \downarrow T2D).
+   * Perform a phenome-wide scan to detect traits that reinforce this stratification.
+   * Leverage this information for further stratification with potential clinical meaning.
+* Analysis pipeline
+#+CAPTION: Analysis flowchart
+[[./plots/aline_plot.png]]
+* BMI and T2D GWAS
+  * BMI: Yengo /et al./ (2018) vs T2D: Mahajan /et al/ (2018).
+    * Common biallelic variants (MAF > 1%)
+    * No INDELs
+    * No potentially ambiguous palindromic SNPs (MAF > 30%)
+    * More than 20 % difference in MAF with 1000G EUR
+    * Clumpling (/r^2/ < 0.01 over 500kb window in 1000G EUR)
+* Cross-referencing
+#+ATTR_LATEX: :width 7cm
+[[./plots/gmirror.png]]
+* Assembly of concordant and discordant profiles
+#+CAPTION: Lead variants aligned to the BMI increasing allele and stratified by their \(\beta\) coefficient for T2D.
+#+ATTR_LATEX: :width 6cm
+[[./plots/profiles.png]]
+* Phenome-wide scan - Data collection
+  * MRC IEU GWAS database
+  * Associations of lead SNPs or nearest proxy if missing 
+    * /r^2/ < 0.01 over 500kb window in 1000G EUR
+  * Studies in EUR
+  * More than 500 individuals
+  * More than 25 minor alleles in smallest group for binary traits
+  * Studies with information for all reference SNPs
+  * If multiple studies for a single trait:
+    * The study with the highest sample size was selected
+  * ~ 3500 traits
+* Phenome-wide comparison
+  * Two-stage analysis
+    * Univariate comparison - Random effects meta-analysis
+    * Clustering and selection of traits - Random forest
+* Phenome-wide comparison - Univariate analysis
+  * Pooled concordant (\(\beta_C\)) and discordant (\(\beta_D\)) effects for each trait
+    1. Standardized beta coefficients: \nbsp \(SE = 1/\sqrt{2 * MAF * (1 - MAF) * (n + Z^2)}\)
+    2. Random effects meta-analysis (Paule-Mandel \(\tau\) estimator)
+  * Difference between pooled estimates (/D/)
+\begin{align*}
+D & = |\beta_C - \beta_D|\\
+\\
+SE_D & = \sqrt{{SE_C}^2 + {SE_D}^2}\\
+\\
+Z & = \frac{D}{SE_D} \sim \mathcal{N}(0,\,{SE_D}^{2})
+\end{align*}
+  * Selection of traits: ( \nbsp \(\beta_C \ne 0\) \nbsp | \nbsp \(\beta_D \ne 0\) \nbsp ) \nbsp & \nbsp \(D \ne 0\)
+    * FDR 10%
+  * 195 traits 
+* Results of univariate comparison
+#+CAPTION: Significant P values (FDR 10%) for difference between pooled estimates (D)
+#+ATTR_LATEX: :width 7cm
+[[./plots/phewas_res.png]]
+* Phenome-wide comparison - SNP-Trait matrix
+  * For each SNP in each trait:
+\begin{align*}
+Z = \frac{\beta}{SE_{\beta}}
+\end{align*}
+  * Produces a 67 SNP x 195 traits matrix with:
+    * High dimensionality
+    * Multicolinearity
+  * COVVSURF (Chavent /et al./ 2019)
+    * Hierarchical agglomerative clustering - PCA
+    * Random Forest
+* PCA
+  * PCs are linear combinations of original variables
+    * Redundant variables can be summarized
+    * The contribution of a variable in a PC = Squared loading (Pearson's /r^2/)
+  * Maximum possible information (variance) is summarized in PC1
+* Random Forest (RF)
+  * Multiple decision trees - Classification or regression
+    * Grown using a random subset of columns and rows of the original data (in-bag)
+      * Replacement
+    * Tested using out-of-bag (OOB) data
+      * Estimation of error rate / accuracy
+  * The output includes:
+    * Probability (/votes/)/value assigned by trees
+    * Importance score
+      * Error rate increase if variable is absent
+    * Proximity matrix
+      * N times two observations occupy the same terminal node
+      * From Breiman and Cutler:
+#+BEGIN_CENTER
+/\(1 - prox(n_i,n_j)\) are squared distances in a Euclidean space/
+ #+END_CENTER
+* Clustering of traits using RF 
+  * Dimensionality reduction into clusters of traits
+  * Relevant for distinguishing between the two sets of SNPs
+  * Non-parametric, data-driven
+  * Process:
+    1. Agglomerative clustering using PCA results in:
+       * Clustering tree with /k/ = 1,2,3.../p/ possible partitions
+       * At every /k/: the 1PCs summarize each cluster  
+    2. Among every /k/: 1PC as predictors for RF
+    3. Model with minimum OOB error rate determines the optimal /k/.
+    4. Nested RF models
+       * Starting with model with only the most important cluster
+       * Ending with model including all clusters selected in *3*
+       * Final model - minimum OOB error rate 
+* RF models
+#+CAPTION: Error rate of RF models across every /k/
+#+ATTR_LATEX: :width 7cm
+[[./plots/kopt_phen.png]]
+* Clusters
+#+CAPTION: Clustering tree with optimal partition
+#+ATTR_LATEX: :width 7cm
+[[./plots/dend_phen.png]]
+* Trait selection - First stage
+#+CAPTION: Importance score of clusters
+#+ATTR_LATEX: :width 7cm
+[[./plots/clusimp_phen.png]]
+* Trait selection - Final model
+#+CAPTION: Importance score, squared loading and pooled estimates of each subtype
+#+ATTR_LATEX: :width 7cm
+[[./plots/clus_str_phen.png]]
+* Main variables
+#+CAPTION: SNP effects for the main three variables
+#+ATTR_LATEX: :width 7cm
+[[./plots/mainvars_phen.png]]
+* Proximity matrix
+#+CAPTION: Multi-dimensional scaling of RF proximity matrix
+#+ATTR_LATEX: :width 7cm
+[[./plots/mds_phen.png]]
+* Individual SNP effects on traits selected
+#+CAPTION: Heatmap of main variables and RF assignment
+#+ATTR_LATEX: :width 7cm
+[[./plots/phen_hm.png]]
+* External validation - BioVU PheWAS
+#+CAPTION: Concordant and discordant effects in BioVU. Stars represent 5% FDR significance after exclusion of individuals with T1D
+#+ATTR_LATEX: :width 7cm
+[[./plots/biovu_pw.png]]
+* External validation - BioVU LabWAS
+#+CAPTION: Concordant and discordant weight gain in BioVU
+#+ATTR_LATEX: :width 7cm
+[[./plots/lw_biovu.png]]
+* Mortality in UK Biobank - Concordant vs Discordant SNPs
+#+CAPTION: Survival analysis of concordant and discordant PRS
+#+ATTR_LATEX: :width 7cm
+[[./plots/prs_surv.png]]
+* Mendelian Randomization
+#+ATTR_LATEX: :width 7cm
+[[./plots/mr_res.png]]
+* Conclusions
+  * Concordant and discordant SNPs differ mainly in:
+    * Liver enzymes - Central adiposity
+    * Blood pressure
+    * Lipids
+  * And differ less strongly in:
+    * BMD
+    * RBC counts
+    * Overall adiposity
+  * The two subgroups are not homogeneous
+  * The causal pathways might differ
+* Strengths and limitations
+  * Mechanisms uncoupling obesity from T2D
+  * Agnostic approach
+  * Reverse causality and confounding
+  * Only EUR
+  * Thresholds chosen affect:
+    * Genetic factors chosen
+    * Clusters built
+  * Smaller sets of instruments in stratified MR
+* Possible future applications
+  * Other levels of the phenome
+  * Random forest proximitry matrix to find more subtypes
