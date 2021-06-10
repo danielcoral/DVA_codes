@@ -4,4 +4,4 @@ These are the codes for running the analysis of genetic discordance between BMI 
 
 To see an overview of the analytical step visit https://danielcoral.github.io/DVA_codes
 
-![](/plots/aline.png)
+![](/plots/aline_plot.png)
