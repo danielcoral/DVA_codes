@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-06-10 Thu 11:17 -->
+<!-- 2021-06-10 Thu 11:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Discordant variant analysis</title>
@@ -276,38 +276,38 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org2ec86a5">1. Background</a></li>
-<li><a href="#org51ba26a">2. Aims</a></li>
-<li><a href="#org67596e3">3. Analysis pipeline</a></li>
-<li><a href="#orge546929">4. BMI and T2D GWAS</a></li>
-<li><a href="#org7794e10">5. Cross-referencing</a></li>
-<li><a href="#orge3939ec">6. Assembly of concordant and discordant profiles</a></li>
-<li><a href="#org45be962">7. Phenome-wide scan - Data collection</a></li>
-<li><a href="#orge8b8653">8. Phenome-wide comparison</a></li>
-<li><a href="#org0f3314c">9. Phenome-wide comparison - Univariate analysis</a></li>
-<li><a href="#org718ff32">10. Results of univariate comparison</a></li>
-<li><a href="#org94f20f1">11. Phenome-wide comparison - SNP-Trait matrix</a></li>
-<li><a href="#org6d16bb6">12. PCA - a reminder</a></li>
-<li><a href="#org59dbb5f">13. Random Forest (RF) - a reminder</a></li>
-<li><a href="#org0fda50c">14. Clustering of traits using RF</a></li>
-<li><a href="#org9360d93">15. RF models</a></li>
-<li><a href="#orgb085594">16. Clusters</a></li>
-<li><a href="#orga84cb4d">17. Trait selection - First stage</a></li>
-<li><a href="#orga2cd1a2">18. Nested models</a></li>
-<li><a href="#org2204c66">19. Trait selection - Final model</a></li>
-<li><a href="#org2eb5c90">20. External validation - BioVU PheWAS</a></li>
-<li><a href="#orgffcd724">21. External validation - BioVU LabWAS</a></li>
-<li><a href="#org5c9e706">22. Mortality in UK Biobank - Concordant vs Discordant SNPs</a></li>
-<li><a href="#org8d7b66d">23. Mendelian Randomization</a></li>
-<li><a href="#org8ad16e4">24. Conclusions</a></li>
-<li><a href="#orgcec4421">25. Strengths and limitations</a></li>
-<li><a href="#org74d27de">26. Possible future applications</a></li>
+<li><a href="#org656fa6a">1. Background</a></li>
+<li><a href="#orgd936054">2. Aims</a></li>
+<li><a href="#org8a9a6eb">3. Analysis pipeline</a></li>
+<li><a href="#orgaf25115">4. BMI and T2D GWAS</a></li>
+<li><a href="#orgfdf531e">5. Cross-referencing</a></li>
+<li><a href="#org6885fc7">6. Assembly of concordant and discordant profiles</a></li>
+<li><a href="#orgad85508">7. Phenome-wide scan - Data collection</a></li>
+<li><a href="#orgf15e270">8. Phenome-wide comparison</a></li>
+<li><a href="#org9a19a83">9. Phenome-wide comparison - Univariate analysis</a></li>
+<li><a href="#org7f4033c">10. Results of univariate comparison</a></li>
+<li><a href="#org77074f9">11. Phenome-wide comparison - SNP-Trait matrix</a></li>
+<li><a href="#org514a3f4">12. PCA - a reminder</a></li>
+<li><a href="#orgb4c3001">13. Random Forest (RF) - a reminder</a></li>
+<li><a href="#org3b9aaa6">14. Clustering of traits using RF</a></li>
+<li><a href="#org3635589">15. RF models</a></li>
+<li><a href="#orgde61641">16. Clusters</a></li>
+<li><a href="#org26bafd0">17. Trait selection - First stage</a></li>
+<li><a href="#org5c170ed">18. Nested models</a></li>
+<li><a href="#org375e58e">19. Trait selection - Final model</a></li>
+<li><a href="#org9296480">20. External validation - BioVU PheWAS</a></li>
+<li><a href="#org7a1f4f9">21. External validation - BioVU LabWAS</a></li>
+<li><a href="#org61eff97">22. Mortality in UK Biobank - Concordant vs Discordant SNPs</a></li>
+<li><a href="#org7f9f432">23. Mendelian Randomization</a></li>
+<li><a href="#orge848ffc">24. Conclusions</a></li>
+<li><a href="#org34a1a1d">25. Strengths and limitations</a></li>
+<li><a href="#orgae55bab">26. Possible future applications</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org2ec86a5" class="outline-2">
-<h2 id="org2ec86a5"><span class="section-number-2">1</span> Background</h2>
+<div id="outline-container-org656fa6a" class="outline-2">
+<h2 id="org656fa6a"><span class="section-number-2">1</span> Background</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>The relationship between obesity and cardiometabolic risk is highly heterogeneous.</li>
@@ -323,8 +323,8 @@ for the JavaScript code in this tag.
 </ul>
 </div>
 </div>
-<div id="outline-container-org51ba26a" class="outline-2">
-<h2 id="org51ba26a"><span class="section-number-2">2</span> Aims</h2>
+<div id="outline-container-orgd936054" class="outline-2">
+<h2 id="orgd936054"><span class="section-number-2">2</span> Aims</h2>
 <div class="outline-text-2" id="text-2">
 <ul class="org-ul">
 <li>Use genetics to stratify obesity into 2 subtypes:
@@ -337,8 +337,8 @@ for the JavaScript code in this tag.
 </ul>
 </div>
 </div>
-<div id="outline-container-org67596e3" class="outline-2">
-<h2 id="org67596e3"><span class="section-number-2">3</span> Analysis pipeline</h2>
+<div id="outline-container-org8a9a6eb" class="outline-2">
+<h2 id="org8a9a6eb"><span class="section-number-2">3</span> Analysis pipeline</h2>
 <div class="outline-text-2" id="text-3">
 
 <div class="figure">
@@ -348,8 +348,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 </div>
-<div id="outline-container-orge546929" class="outline-2">
-<h2 id="orge546929"><span class="section-number-2">4</span> BMI and T2D GWAS</h2>
+<div id="outline-container-orgaf25115" class="outline-2">
+<h2 id="orgaf25115"><span class="section-number-2">4</span> BMI and T2D GWAS</h2>
 <div class="outline-text-2" id="text-4">
 <ul class="org-ul">
 <li>We cross-referenced GWAS fo BMI (Yengo <i>et al.</i> [2018]) and T2D (Mahajan <i>et al</i> [2018]).</li>
@@ -364,8 +364,8 @@ for the JavaScript code in this tag.
 </ul>
 </div>
 </div>
-<div id="outline-container-org7794e10" class="outline-2">
-<h2 id="org7794e10"><span class="section-number-2">5</span> Cross-referencing</h2>
+<div id="outline-container-orgfdf531e" class="outline-2">
+<h2 id="orgfdf531e"><span class="section-number-2">5</span> Cross-referencing</h2>
 <div class="outline-text-2" id="text-5">
 
 <div class="figure">
@@ -374,8 +374,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 </div>
-<div id="outline-container-orge3939ec" class="outline-2">
-<h2 id="orge3939ec"><span class="section-number-2">6</span> Assembly of concordant and discordant profiles</h2>
+<div id="outline-container-org6885fc7" class="outline-2">
+<h2 id="org6885fc7"><span class="section-number-2">6</span> Assembly of concordant and discordant profiles</h2>
 <div class="outline-text-2" id="text-6">
 <ul class="org-ul">
 <li>We took the lead variants and aligned to the BMI increasing allele</li>
@@ -388,8 +388,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 </div>
-<div id="outline-container-org45be962" class="outline-2">
-<h2 id="org45be962"><span class="section-number-2">7</span> Phenome-wide scan - Data collection</h2>
+<div id="outline-container-orgad85508" class="outline-2">
+<h2 id="orgad85508"><span class="section-number-2">7</span> Phenome-wide scan - Data collection</h2>
 <div class="outline-text-2" id="text-7">
 <ul class="org-ul">
 <li>We queried the <a href="https://gwas.mrcieu.ac.uk/">MRC IEU GWAS database</a> for:
@@ -411,8 +411,8 @@ for the JavaScript code in this tag.
 </ul>
 </div>
 </div>
-<div id="outline-container-orge8b8653" class="outline-2">
-<h2 id="orge8b8653"><span class="section-number-2">8</span> Phenome-wide comparison</h2>
+<div id="outline-container-orgf15e270" class="outline-2">
+<h2 id="orgf15e270"><span class="section-number-2">8</span> Phenome-wide comparison</h2>
 <div class="outline-text-2" id="text-8">
 <ul class="org-ul">
 <li>We applied a two-stage analysis
@@ -423,8 +423,8 @@ for the JavaScript code in this tag.
 </ul>
 </div>
 </div>
-<div id="outline-container-org0f3314c" class="outline-2">
-<h2 id="org0f3314c"><span class="section-number-2">9</span> Phenome-wide comparison - Univariate analysis</h2>
+<div id="outline-container-org9a19a83" class="outline-2">
+<h2 id="org9a19a83"><span class="section-number-2">9</span> Phenome-wide comparison - Univariate analysis</h2>
 <div class="outline-text-2" id="text-9">
 <ul class="org-ul">
 <li>Pooled concordant (\(\beta_C\)) and discordant (\(\beta_D\)) effects for each trait
@@ -450,8 +450,8 @@ Z & = \frac{D}{SE_D} \sim \mathcal{N}(0,\,{SE_D}^{2})
 </ul>
 </div>
 </div>
-<div id="outline-container-org718ff32" class="outline-2">
-<h2 id="org718ff32"><span class="section-number-2">10</span> Results of univariate comparison</h2>
+<div id="outline-container-org7f4033c" class="outline-2">
+<h2 id="org7f4033c"><span class="section-number-2">10</span> Results of univariate comparison</h2>
 <div class="outline-text-2" id="text-10">
 
 <div class="figure">
@@ -461,14 +461,14 @@ Z & = \frac{D}{SE_D} \sim \mathcal{N}(0,\,{SE_D}^{2})
 </div>
 </div>
 </div>
-<div id="outline-container-org94f20f1" class="outline-2">
-<h2 id="org94f20f1"><span class="section-number-2">11</span> Phenome-wide comparison - SNP-Trait matrix</h2>
+<div id="outline-container-org77074f9" class="outline-2">
+<h2 id="org77074f9"><span class="section-number-2">11</span> Phenome-wide comparison - SNP-Trait matrix</h2>
 <div class="outline-text-2" id="text-11">
 <ul class="org-ul">
-<li>We filled a SNP-Trait matrix with $z$-scores in each trait:</li>
+<li>We filled a SNP-Trait matrix with \(z\)-scores in each trait:</li>
 </ul>
 \begin{align*}
-Z = \frac{\beta}{SE_{\beta}}
+z = \frac{\beta}{SE_{\beta}}
 \end{align*}
 <ul class="org-ul">
 <li>Dimensions: 67 SNP x 195 traits
@@ -484,8 +484,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </ul>
 </div>
 </div>
-<div id="outline-container-org6d16bb6" class="outline-2">
-<h2 id="org6d16bb6"><span class="section-number-2">12</span> PCA - a reminder</h2>
+<div id="outline-container-org514a3f4" class="outline-2">
+<h2 id="org514a3f4"><span class="section-number-2">12</span> PCA - a reminder</h2>
 <div class="outline-text-2" id="text-12">
 <ul class="org-ul">
 <li>PCs are linear combinations of original variables
@@ -497,8 +497,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </ul>
 </div>
 </div>
-<div id="outline-container-org59dbb5f" class="outline-2">
-<h2 id="org59dbb5f"><span class="section-number-2">13</span> Random Forest (RF) - a reminder</h2>
+<div id="outline-container-orgb4c3001" class="outline-2">
+<h2 id="orgb4c3001"><span class="section-number-2">13</span> Random Forest (RF) - a reminder</h2>
 <div class="outline-text-2" id="text-13">
 <ul class="org-ul">
 <li>RF is an ensemble of multiple decision trees</li>
@@ -520,8 +520,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </ul>
 </div>
 </div>
-<div id="outline-container-org0fda50c" class="outline-2">
-<h2 id="org0fda50c"><span class="section-number-2">14</span> Clustering of traits using RF</h2>
+<div id="outline-container-org3b9aaa6" class="outline-2">
+<h2 id="org3b9aaa6"><span class="section-number-2">14</span> Clustering of traits using RF</h2>
 <div class="outline-text-2" id="text-14">
 <ul class="org-ul">
 <li>Dimensionality reduction into clusters of traits</li>
@@ -546,8 +546,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </ul>
 </div>
 </div>
-<div id="outline-container-org9360d93" class="outline-2">
-<h2 id="org9360d93"><span class="section-number-2">15</span> RF models</h2>
+<div id="outline-container-org3635589" class="outline-2">
+<h2 id="org3635589"><span class="section-number-2">15</span> RF models</h2>
 <div class="outline-text-2" id="text-15">
 
 <div class="figure">
@@ -557,8 +557,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </div>
 </div>
 </div>
-<div id="outline-container-orgb085594" class="outline-2">
-<h2 id="orgb085594"><span class="section-number-2">16</span> Clusters</h2>
+<div id="outline-container-orgde61641" class="outline-2">
+<h2 id="orgde61641"><span class="section-number-2">16</span> Clusters</h2>
 <div class="outline-text-2" id="text-16">
 
 <div class="figure">
@@ -568,8 +568,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </div>
 </div>
 </div>
-<div id="outline-container-orga84cb4d" class="outline-2">
-<h2 id="orga84cb4d"><span class="section-number-2">17</span> Trait selection - First stage</h2>
+<div id="outline-container-org26bafd0" class="outline-2">
+<h2 id="org26bafd0"><span class="section-number-2">17</span> Trait selection - First stage</h2>
 <div class="outline-text-2" id="text-17">
 
 <div class="figure">
@@ -579,8 +579,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </div>
 </div>
 </div>
-<div id="outline-container-orga2cd1a2" class="outline-2">
-<h2 id="orga2cd1a2"><span class="section-number-2">18</span> Nested models</h2>
+<div id="outline-container-org5c170ed" class="outline-2">
+<h2 id="org5c170ed"><span class="section-number-2">18</span> Nested models</h2>
 <div class="outline-text-2" id="text-18">
 
 <div class="figure">
@@ -589,8 +589,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </div>
 </div>
 </div>
-<div id="outline-container-org2204c66" class="outline-2">
-<h2 id="org2204c66"><span class="section-number-2">19</span> Trait selection - Final model</h2>
+<div id="outline-container-org375e58e" class="outline-2">
+<h2 id="org375e58e"><span class="section-number-2">19</span> Trait selection - Final model</h2>
 <div class="outline-text-2" id="text-19">
 
 <div class="figure">
@@ -600,8 +600,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </div>
 </div>
 </div>
-<div id="outline-container-org2eb5c90" class="outline-2">
-<h2 id="org2eb5c90"><span class="section-number-2">20</span> External validation - BioVU PheWAS</h2>
+<div id="outline-container-org9296480" class="outline-2">
+<h2 id="org9296480"><span class="section-number-2">20</span> External validation - BioVU PheWAS</h2>
 <div class="outline-text-2" id="text-20">
 
 <div class="figure">
@@ -611,8 +611,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </div>
 </div>
 </div>
-<div id="outline-container-orgffcd724" class="outline-2">
-<h2 id="orgffcd724"><span class="section-number-2">21</span> External validation - BioVU LabWAS</h2>
+<div id="outline-container-org7a1f4f9" class="outline-2">
+<h2 id="org7a1f4f9"><span class="section-number-2">21</span> External validation - BioVU LabWAS</h2>
 <div class="outline-text-2" id="text-21">
 
 <div class="figure">
@@ -622,8 +622,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </div>
 </div>
 </div>
-<div id="outline-container-org5c9e706" class="outline-2">
-<h2 id="org5c9e706"><span class="section-number-2">22</span> Mortality in UK Biobank - Concordant vs Discordant SNPs</h2>
+<div id="outline-container-org61eff97" class="outline-2">
+<h2 id="org61eff97"><span class="section-number-2">22</span> Mortality in UK Biobank - Concordant vs Discordant SNPs</h2>
 <div class="outline-text-2" id="text-22">
 
 <div class="figure">
@@ -633,8 +633,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </div>
 </div>
 </div>
-<div id="outline-container-org8d7b66d" class="outline-2">
-<h2 id="org8d7b66d"><span class="section-number-2">23</span> Mendelian Randomization</h2>
+<div id="outline-container-org7f9f432" class="outline-2">
+<h2 id="org7f9f432"><span class="section-number-2">23</span> Mendelian Randomization</h2>
 <div class="outline-text-2" id="text-23">
 
 <div class="figure">
@@ -643,8 +643,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </div>
 </div>
 </div>
-<div id="outline-container-org8ad16e4" class="outline-2">
-<h2 id="org8ad16e4"><span class="section-number-2">24</span> Conclusions</h2>
+<div id="outline-container-orge848ffc" class="outline-2">
+<h2 id="orge848ffc"><span class="section-number-2">24</span> Conclusions</h2>
 <div class="outline-text-2" id="text-24">
 <ul class="org-ul">
 <li>Concordant and discordant SNPs differ mainly in:
@@ -664,8 +664,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </ul>
 </div>
 </div>
-<div id="outline-container-orgcec4421" class="outline-2">
-<h2 id="orgcec4421"><span class="section-number-2">25</span> Strengths and limitations</h2>
+<div id="outline-container-org34a1a1d" class="outline-2">
+<h2 id="org34a1a1d"><span class="section-number-2">25</span> Strengths and limitations</h2>
 <div class="outline-text-2" id="text-25">
 <ul class="org-ul">
 <li>Phenome-wide exploration for mechanisms uncoupling obesity from T2D</li>
@@ -679,8 +679,8 @@ Z = \frac{\beta}{SE_{\beta}}
 </ul>
 </div>
 </div>
-<div id="outline-container-org74d27de" class="outline-2">
-<h2 id="org74d27de"><span class="section-number-2">26</span> Possible future applications</h2>
+<div id="outline-container-orgae55bab" class="outline-2">
+<h2 id="orgae55bab"><span class="section-number-2">26</span> Possible future applications</h2>
 <div class="outline-text-2" id="text-26">
 <ul class="org-ul">
 <li>Other levels of the phenome</li>
@@ -692,7 +692,7 @@ Z = \frac{\beta}{SE_{\beta}}
 <div id="postamble" class="status">
 <p class="author">Author: Daniel Coral</p>
 <p class="email">Email: <a href="mailto:daniel.coral@med.lu.se">daniel.coral@med.lu.se</a></p>
-<p class="date">Created: 2021-06-10 Thu 11:17</p>
+<p class="date">Created: 2021-06-10 Thu 11:24</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

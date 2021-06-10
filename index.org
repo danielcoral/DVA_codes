@@ -75,9 +75,9 @@ Z & = \frac{D}{SE_D} \sim \mathcal{N}(0,\,{SE_D}^{2})
 #+ATTR_LATEX: :width 7cm
 [[./plots/phewas_res.png]]
 * Phenome-wide comparison - SNP-Trait matrix
-  * We filled a SNP-Trait matrix with $z$-scores in each trait:
+  * We filled a SNP-Trait matrix with \(z\)-scores in each trait:
 \begin{align*}
-Z = \frac{\beta}{SE_{\beta}}
+z = \frac{\beta}{SE_{\beta}}
 \end{align*}
   * Dimensions: 67 SNP x 195 traits
     * High dimensionality
