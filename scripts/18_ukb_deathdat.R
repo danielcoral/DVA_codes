@@ -42,19 +42,43 @@ all_scores <- rio::import("~/dva/files/all_scores.tsv") ## %>% mutate(across(-ei
 ## level	 = 1 for primary cause, 2 for contributory causes
 ## cause_icd10   = Self-explanatory
 
-mor <- rio::import("~/dva/files/death.txt")
-morc <- rio::import("~/dva/files/death_cause.txt")
+mordate <- rio::import("~/dva/files/death.txt")
+morcause <- rio::import("~/dva/files/death_cause.txt")
+
+## Only first instances and primary cause
+mordate <- filter(mordate, ins_index == 0)
+morcause <- filter(morcause, ins_index == 0, level == 1)
+
+## Joining
+mor <- inner_join(mordate, morcause) %>%
+    select(eid, date_of_death, cause_icd10)
+
+## CV death
+## Diagnosis from ICD-10 chapter IX (Circulatory system)
+cvcauses <- paste0("I", c(1,2,34,35:37,42,44:50,6,70,71,72,739,74,75,77)) %>%
+    ## Additional codes extracted from Ruigómez et al. 2021
+    c("G45", "G46", "R092", "R960", "R961", "R98", "F01", "R570") %>%
+    paste0("^", .) %>%
+    paste(collapse = "|")
+
+## Table of codes retrieved for supplementary data
+icdcodes <- icd10cm2019
+
+icd_cv <- icdcodes %>%
+    filter(grepl(cvcauses, code)) %>%
+    select(code, short_desc) %>%
+    filter(str_count(code) <= 4)
+
+icd_cv %>%
+    rio::export("~/dva/files/icd_cv.tsv")
+
+## Coding date and causes of death
 mor_ed <- mor %>%
-    ## Only primary cause of death
-    filter(ins_index == 0) %>%
     transmute(eid,
               date_of_death = as.Date(format(as.Date(date_of_death,
                                                      format = "%d/%m/%Y"),
                                              "%Y-%m-%d")),
-              ## Primary cause of death: Cardiovascular
-              cv_m = eid %in% unique(morc$eid[grep("I", morc$cause_icd10)]),
-              ## Primary cause of death: Diabetes complications
-              t2d_m = eid %in% unique(morc$eid[grep("E11", morc$cause_icd10)]))
+              cv_m = grepl(cvcauses, cause_icd10))
 
 ## Merging covariate and death data
 ukbphen <- ukb_covar %>%
@@ -74,7 +98,6 @@ ukbphen <- ukb_covar %>%
               death_recorded = !is.na(date_of_death),
               all_cause = ifelse(death_recorded & death_bf_limit, 1, 0),
               cv_cause = ifelse(all_cause == 1 & cv_m, 1, 0),
-              t2d_cause = ifelse(death_recorded & death_bf_limit & t2d_m, 1, 0),
               time = round(ifelse(all_cause == 1,
                                   as.numeric((date_of_death - date0)),
                                   as.numeric((as.Date("2021-02-28") - date0))))) %>%

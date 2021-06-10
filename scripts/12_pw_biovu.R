@@ -97,6 +97,7 @@ pw_biovu_dat <- pw_biovu %>%
                  "Disorders of lipoid metabolism" = "Lipoid metabolism dis",
                  "Hyperlipidemia" = "Hyperlipidaemia",
                  "Ischemic" = "Ischaemic",
+                 "Meticillin resistance Staphylococcus aureus" = "MRSA",
                  "Staphylococcus aureus" = "Staph aureus",
                  "Complications of cardiac.*" = "Cardiac/vascular device complications")
            ),
@@ -112,8 +113,9 @@ pw_biovu_dat <- pw_biovu %>%
                              levels = c("Obesity", "Diabetes", "CV",
                                         "Lipids", "Renal", "Other")))
 
-## Plot
+## Plot (only no T1D data)
 pwbiovu_plot <- pw_biovu_dat %>%
+    filter(dataset == "No T1D", !is.na(sigdif)|priority == "Obesity") %>%
     ggplot(aes(beta,
                interaction(description,
                            reorder(priority, desc(priority))),
@@ -125,23 +127,25 @@ pwbiovu_plot <- pw_biovu_dat %>%
                position = position_dodge(width = 0.5)) +
     geom_point(shape = 1, col = "black", alpha = .4,
                position = position_dodge(width = 0.5)) +
-    geom_point(aes(x = sigdif), shape = "*", size = 4) +
+##    geom_point(aes(x = sigdif), shape = "*", size = 4) +
     geom_vline(xintercept = 0, linetype = "dashed") +
-    ##    scale_color_manual(values = c("red", "blue"), guide = "none") +
+##    scale_color_manual(values = c("red", "blue"), guide = "none") +
     scale_colour_discrete(labels = c("Concordant", "Discordant"),
                           guide = guide_legend(title = NULL)) +
     guides(y = "axis_nested") +
-    facet_wrap(~ dataset) +
+##    facet_wrap(~ dataset) +
     labs(x = "logOR per allele") +
+    theme_light() +
     theme(axis.title.y = element_blank(),
-          legend.position = "top",
+          legend.position = "none",
           axis.text.y = element_text(size = 7),
           ggh4x.axis.nesttext.y = element_text(angle = 90, hjust = .5,
                                                margin = margin(l = 10),
-                                               face = "bold"),
-          strip.text = element_text(face = "bold"))
+                                               face = "bold"))
 
-ggsave("../docs/plots/biovu_pw.png")
+save(pwbiovu_plot, file = "~/dva/files/pwbiovu_plot.RData")
+
+ggsave("../plots/biovu_pw.png")
 
 ## Saving to include in supplementary data
 pw_biovu_dat %>%

@@ -20,6 +20,4 @@ prof <- mix %>%
           axis.title = element_text(size = 12)) +
     labs(x = "BMI increase (SD units)", y = "T2D OR")
 
-save(prof, file = "../plot_files/profiles.RData")
-
-ggsave("../docs/plots/profiles.png", prof)
+ggsave("../plots/profiles.png", prof)

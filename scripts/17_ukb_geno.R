@@ -28,6 +28,8 @@ allele_counts <- map(
 
 rio::export(allele_counts, "~/dva/files/allele_counts.tsv")
 
+allele_counts <- rio::import("~/dva/files/allele_counts.tsv")
+
 ## Calculating concordant and discordant scores
 scores <- mix %>%
     group_by(disc) %>%
@@ -38,6 +40,7 @@ scores <- mix %>%
 
 ## Calculating scores for each SNP cluster
 snpclus_scores <- snpclus %>%
+    mutate(label = gsub(".*\\(|\\)", "", label)) %>%
     group_by(disc, clus_nm) %>%
     mutate(clusid = paste0("snpclus_",
                            ifelse(disc == 1, "disc", "conc"),

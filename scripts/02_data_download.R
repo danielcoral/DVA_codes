@@ -35,18 +35,6 @@ if(!file.exists("~/dva/files/t2d.txt")){
     )
 }
 
-## BMI from GIANT only
-if(!file.exists("~/dva/files/bmi_giant.txt")){
-    download.file(
-        paste0(
-            "https://portals.broadinstitute.org/collaboration/giant/images/1/15/",
-            "SNP_gwas_mc_merge_nogc.tbl.uniq.gz"
-        ),
-        "~/dva/files/bmi_giant.txt.gz"
-    )
-    R.utils::gunzip("~/dva/files/bmi_giant.txt.gz")
-}
-
 ## T2D from DIAGRAM only
 if(!file.exists("~/dva/files/t2d_diagram.txt")){
     system(

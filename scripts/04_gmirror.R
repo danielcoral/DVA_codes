@@ -85,6 +85,4 @@ s <- mix %>%
 gmirror <- list(g, s, grid::textGrob("-log10 p"), patchwork::plot_spacer()) %>%
     patchwork::wrap_plots(ncol = 2, nrow = 2, widths = c(.95, .05), heights = c(.99,.01))
 
-save(gmirror, file = "../plot_files/gmirror.RData") 
-
-ggsave("../docs/plots/gmirror.png", gmirror)
+ggsave("../plots/gmirror.png", gmirror)

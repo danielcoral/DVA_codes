@@ -29,6 +29,4 @@ aline_plot <- aline_dat %>%
     ylim(-1.5, 1.5) +
     theme_void()
 
-save(aline_plot, file = "../plot_files/aline_plot.RData")
-
-ggsave("../docs/plots/aline_plot.png", aline_plot)
+ggsave("../plots/aline_plot.png", aline_plot)

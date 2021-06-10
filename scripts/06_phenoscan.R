@@ -210,12 +210,10 @@ toremove <- c("Type 2 diabetes", ## T2D diagnosis
               "Started insulin within one year diagnosis of diabetes",
               "Diagnoses - secondary ICD10: E11.9 Without complications",
               "Diagnoses - secondary ICD10: E10.9 Without complications",
-              
               ## Glucose measurements
               "Glucose", "Fasting glucose", "Fasting blood glucose", "Two-hour glucose challenge",
               "Fasting blood glucose adjusted for BMI", 
               "HbA1C", "Glycated haemoglobin", "Glycated hemoglobin levels",
-              
               ## Family history of T2D
               "Illnesses of mother: Diabetes",
               "Illnesses of father: Diabetes",
@@ -226,7 +224,6 @@ toremove <- c("Type 2 diabetes", ## T2D diagnosis
               "Illnesses of father: None of the above (group 1)",
               "Illnesses of siblings: None of the above (group 1)",
               "Illnesses of adopted siblings: None of the above (group 1)",
-              
               ## T2D medication
               "Medication for cholesterol  blood pressure or diabetes: Insulin",
               "Medication for cholesterol, blood pressure or diabetes: Insulin",
@@ -240,11 +237,14 @@ toremove <- c("Type 2 diabetes", ## T2D diagnosis
               "Treatment/medication code: metformin",
               "Treatment/medication code: rosiglitazone",
               "Treatment/medication code: gliclazide",
-              
               ## T2D complications (include T2D diagnosis)
               "Eye problems/disorders: Diabetes related eye disease",
               "Glomerular filtration rate in diabetics (creatinine)",
               "Glomerular filtration rate in non diabetics (creatinine)")
+
+## Table for supplementary data
+data.frame(Traits = toremove) %>%
+    rio::export("~/dva/files/excludedtraits.tsv")
 
 traitstouse <- traitinfo %>%
     filter(!trait %in% toremove)

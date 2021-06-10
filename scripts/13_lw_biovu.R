@@ -79,14 +79,17 @@ lwbiovu_plot <- lw_biovu_dat %>%
     geom_point(shape = 1, col = "black", alpha = .4,
                position = position_dodge(0.5)) +
     ##    scale_colour_manual(values = c("red", "blue"), guide = "none") +
-    scale_colour_discrete(labels = c("Concordant", "Discordant"),
-                          guide = guide_legend(title = NULL)) +
+    scale_colour_discrete(labels = c("Concordant", "Discordant")) +
     geom_vline(xintercept = 0, linetype = "dashed") +
     facet_grid(pop ~ ., scales = "free_y", space = "free_y") +
     labs(title = "", x = "SD per allele") +
+    theme_light() +
     theme(axis.title.y = element_blank(),
-          legend.position = "top",
+          axis.text.y = element_text(size = 7),
+          legend.position = "none",
           strip.text.y = element_text(angle = 0))
+
+save(lwbiovu_plot, file = "~/dva/files/lwbiovu_plot.RData")
 
 ggsave("../docs/plots/lw_biovu.png")
 

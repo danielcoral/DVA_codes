@@ -219,6 +219,4 @@ phewas_res <- dxtab_c %>%
     theme(axis.text.x = element_blank(),
           axis.ticks.x = element_blank())
 
-save(phewas_res, file = "../plot_files/phewas_res.RData")
-
-ggsave("../docs/plots/phewas_res.png", phewas_res)
+ggsave("../plots/phewas_res.png", phewas_res)

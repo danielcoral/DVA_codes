@@ -24,6 +24,13 @@ premat_phen <- pheno_scan %>%
 
 rio::export(premat_phen, "~/dva/files/premat_phen.tsv")
 
+## Table of traits for supplementary data
+premat_phen %>%
+    select(grpid, trait, year, consortium, author, sex, pmid,
+           population, nsnp, sample_size, category, ncase, ncontrol) %>%
+    unique %>%
+    rio::export("~/dva/files/premat_traits.tsv")
+
 mat_phen <- premat_phen %>%
     transmute(ref_rsid, disc, grpid, zscore) %>%
     pivot_wider(names_from = grpid, values_from = zscore) %>%
