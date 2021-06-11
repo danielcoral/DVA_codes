@@ -1,7 +1,6 @@
 ## Analysis pipeline plot
 
 library(tidyverse)
-library(ggrepel)
 
 aline_dat <- data.frame(
     items = c(NA,
@@ -29,4 +28,4 @@ aline_plot <- aline_dat %>%
     ylim(-1.5, 1.5) +
     theme_void()
 
-ggsave("../plots/aline_plot.png", aline_plot)
+ggsave("../plots/aline_plot.png", aline_plot, height = 4)
