@@ -48,3 +48,9 @@ untar(
   files = c("EUR.bed", "EUR.bim", "EUR.fam"),
   exdir = "projects/DVA/Data/ReferenceData/1kg_ref/"
 )
+
+## Gencode
+download.file(
+  "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.annotation.gtf.gz",
+  "~/projects/DVA/Data/ReferenceData/gencode.v19.annotation.gtf.gz"
+)
