@@ -87,3 +87,16 @@ head(bmi_t2d_clumped)
 nrow(bmi_t2d_clumped)
 gencode <- rtracklayer::readGFF("~/projects/DVA/Data/ReferenceData/gencode.v19.annotation.gtf")
 head(gencode)
+bmi_t2d_genprofiles <- gencode %>%
+    filter(type == "gene") %>%
+    transmute(chrom = as.numeric(gsub("chr", "", seqid)),
+              start, end, gene_name) %>%
+    drop_na %>%
+    inner_join(bmi_t2d_clumped, by = "chrom") %>%
+    mutate(distance = ifelse(pos >= start & pos <= end, 0, pmin(abs(pos - start), abs(pos - end)))) %>%
+    group_by(rsid) %>%
+    slice_min(distance, with_ties = FALSE) %>%
+    mutate(profile = ifelse(beta_t2d > 0, "Concordant", "Discordant"), nearest_gene = gene_name) %>%
+    select(-c(start, end, gene_name, distance))
+head(bmi_t2d_genprofiles)
+write_tsv(bmi_t2d_genprofiles, "../data/mix.tsv")
