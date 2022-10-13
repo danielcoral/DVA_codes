@@ -1,5 +1,5 @@
 # Discordant variant analysis
 
-These are the codes for running the analysis of genetic discordance between BMI and T2D.
+These are the codes for running the analysis of genetic discordance between BMI and T2D using GWAS summary data.
 
-![](/plots/aline_plot.png)
+![](schema.png)
