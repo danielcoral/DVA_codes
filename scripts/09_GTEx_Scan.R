@@ -52,3 +52,53 @@ system(paste0(
     "../data/gtex_snps.txt ../data/lookup.txt > ../data/gtex_hits.tsv"
 ))
 
+## Concordant and discordant SNPs and proxies
+system(paste("awk \'NR == FNR{if(FNR == 1){header = $0; next} a[$7] = $0; next}",
+             "NR > FNR",
+             "{if($2 in a || FNR == 1){printf \"%s\\t%s\\n\", $0, (FNR == 1 ? header : a[$2])}}\'",
+             "OFS=\'\t\'",
+             "../data/gtex_hits.tsv ../data/proxies.tsv",
+             "> ../data/proxies_gtex.tsv"))
+
+proxies_gtex <- fread("../data/proxies_gtex.tsv",
+                      drop = c(24,25,26,28,29,30,31,32)) %>%
+    rename(hg38_pos = variant_pos)
+
+## Performing the scan
+trans_res <- lapply(
+    list.files("../data/processed_gtex", full.names = T),
+    function(f)
+        fread(f)[
+          proxies_gtex, on = c("chr", "hg38_pos"), nomatch = 0
+        ] %>%
+        ## Only 1 association between a SNP and a gene in a tissue
+        arrange(ref_rsid, qtl_type, tissue, gene_id, proxy, desc(r2), pval_nominal) %>%
+        distinct(ref_rsid, qtl_type, tissue, gene_id, .keep_all = T) %>%
+        ## Harmonizing to the BMI increasing allele
+        mutate(harmon = case_when(ea.gtex == ea.bmi & nea.gtex == nea.bmi ~ 1,
+                                  ea.gtex == nea.bmi & nea.gtex == ea.bmi ~ -1,
+                                  TRUE ~ 0),
+               slope = slope * harmon)
+) %>%
+    bind_rows
+
+## Adding gene names
+sig_genes <- unique(gsub("\\.[0-9]+$", "", trans_res$gene_id))
+
+ensembl_genes <- biomaRt::useEnsembl(biomart = "ensembl",
+                                     dataset = "hsapiens_gene_ensembl")
+
+gene_names <- biomaRt::getBM(attributes = c("ensembl_gene_id", "external_gene_name"),
+                             filters = "ensembl_gene_id",
+                             values = sig_genes,
+                             mart = ensembl_genes) %>%
+    `names<-`(c("gene_id2", "gene_name"))
+
+## Adding names
+trans_res <- trans_res %>%
+    mutate(gene_id2 = gsub("\\.[0-9]+", "", gene_id)) %>%
+    left_join(gene_names)
+
+fwrite(trans_res, "../data/trans_res.tsv", sep = "\t")
+
+trans_res <- rio::import("../data/trans_res.tsv")
