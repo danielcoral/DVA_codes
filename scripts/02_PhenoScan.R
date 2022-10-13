@@ -3,7 +3,7 @@ library(ieugwasr)
 library(genetics.binaRies)
 library(gwasrapidd)
 library(easyPubMed)
-mix <- rio::import("~../data/mix.tsv")
+mix <- rio::import("../data/mix.tsv")
 ## Files to write PLINK output
 out <- "~/dva/files/mix_prox"
 targetsname <- paste0(out, ".targets")
@@ -60,9 +60,9 @@ proxies <- readr::read_table2(pipe(paste("gunzip -c ", outname))) %>%
     ungroup %>%
     arrange(n_ld)
 
-rio::export(proxies, "~/dva/files/proxies.tsv")
+rio::export(proxies, "../data/proxies.tsv")
 
-proxies <- rio::import("~/dva/files/proxies.tsv")
+proxies <- rio::import("../data/proxies.tsv")
 
 ##********##
 ## Traits ##
@@ -181,7 +181,7 @@ popmixed_add <- data.frame(pmid = pmid_add,
 
 popmixed_tabf <- bind_rows(popmixed_tab, popmixed_add)
 
-rio::export(popmixed_tabf, "~/dva/files/popmixed_tabf.tsv")
+rio::export(popmixed_tabf, "../data/popmixed_tabf.tsv")
 
 ## Filtering traits that contain or are used for diabetes diagnosis
 traitinfo %>%
@@ -234,14 +234,14 @@ toremove <- c("Type 2 diabetes", ## T2D diagnosis
 
 ## Table for supplementary data
 data.frame(Traits = toremove) %>%
-    rio::export("~/dva/files/excludedtraits.tsv")
+    rio::export("../data/excludedtraits.tsv")
 
 traitstouse <- traitinfo %>%
     filter(!trait %in% toremove)
 
-rio::export(traitstouse, "~/dva/files/traitstouse.tsv")
+rio::export(traitstouse, "../data/traitstouse.tsv")
 
-traitstouse <- rio::import("~/dva/files/traitstouse.tsv")
+traitstouse <- rio::import("../data/traitstouse.tsv")
 
 ##**********************************##
 ## Phenome-scan with reference SNPs ##
@@ -265,9 +265,9 @@ pheno_scan_ref <- lapply(split(mix$rsid, ceiling(1:nrow(mix)/10)),
                          }) %>%
     bind_rows()
 
-rio::export(pheno_scan_ref, "~/dva/files/pheno_scan_ref.tsv")
+rio::export(pheno_scan_ref, "../data/pheno_scan_ref.tsv")
 
-pheno_scan_ref <- rio::import("~/dva/files/pheno_scan_ref.tsv")
+pheno_scan_ref <- rio::import("../data/pheno_scan_ref.tsv")
 
 ##**********************************************##
 ## Completing missing associations with proxies ##
@@ -313,9 +313,9 @@ pheno_scan_prox <- pheno_scan_ref %>%
         }, .keep = TRUE
     )
 
-rio::export(pheno_scan_prox, "~/dva/files/pheno_scan_prox.tsv")
+rio::export(pheno_scan_prox, "../data/pheno_scan_prox.tsv")
 
-pheno_scan_prox <- rio::import("~/dva/files/pheno_scan_prox.tsv")
+pheno_scan_prox <- rio::import("../data/pheno_scan_prox.tsv")
 
 ##*****************##
 ## Joining results ##
@@ -363,4 +363,4 @@ pheno_scan <- list(pheno_scan_ref,
 ##                         beta),
 ##           se = beta / zscore)
 
-rio::export(pheno_scan, "~/dva/files/pheno_scan.tsv")
+rio::export(pheno_scan, "../data/pheno_scan.tsv")
